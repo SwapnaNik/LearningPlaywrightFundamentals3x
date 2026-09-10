@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Playwright Architecture</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f7f9fc;
+            color: #222;
+        }
+
+        h1 {
+            color: #2f5bea;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 35px;
+        }
+
+        h3 {
+            color: #2f5bea;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .box {
+            background: #eaf0ff;
+            border: 2px solid #2f5bea;
+            border-radius: 8px;
+            padding: 15px 25px;
+            text-align: center;
+            min-width: 130px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .concept {
+            background: #f1f5f9;
+            padding: 18px;
+            margin: 15px 0;
+            border-left: 5px solid #2f5bea;
+            border-radius: 5px;
+        }
+
+        code {
+            background: #eee;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: #fff7d6;
+            border-left: 5px solid #f0b400;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #eaf0ff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Playwright Architecture</h1>
+
+    <div class="section">
+
+        <h2>Overview</h2>
+
+        <p>
+            Playwright architecture is built on a modern client-server model
+            that communicates directly with browser rendering engines over
+            a single, persistent network connection.
+        </p>
+
+        <p>
+            Playwright supports major browser engines such as
+            Chromium, Firefox and WebKit.
+        </p>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Core Components of Playwright Architecture</h2>
+
+        <h3>1. Test Code</h3>
+
+        <p>
+            The test code is written using languages such as
+            JavaScript, TypeScript, Python, Java or .NET.
+        </p>
+
+        <p>
+            Example:
+        </p>
+
+        <pre>
+const { test, expect } = require('@playwright/test');
+
+test('Login test', async ({ page }) => {
+
+    await page.goto('https://example.com');
+
+    await page.locator('#username').fill('admin');
+
+    await page.locator('#password').fill('password');
+
+    await page.locator('#login').click();
+
+});
+        </pre>
+
+    </div>
+
+
+    <!-- NEW IMPORTANT SECTION -->
+
+    <div class="section">
+
+        <h2>Browser → Browser Context → Page → Locator</h2>
+
+        <p>
+            One of the most important concepts in Playwright is understanding
+            the relationship between the <strong>Browser</strong>,
+            <strong>Browser Context</strong>, <strong>Page</strong> and
+            <strong>Locator</strong>.
+        </p>
+
+        <div class="flow">
+
+            <div class="box">
+                Browser
+            </div>
+
+            <div class="arrow">
+                →
+            </div>
+
+            <div class="box">
+                Browser Context
+            </div>
+
+            <div class="arrow">
+                →
+            </div>
+
+            <div class="box">
+                Page
+            </div>
+
+            <div class="arrow">
+                →
+            </div>
+
+            <div class="box">
+                Locator
+            </div>
+
+        </div>
+
+
+        <div class="concept">
+
+            <h3>1. Browser</h3>
+
+            <p>
+                The <strong>Browser</strong> represents the actual browser
+                instance launched by Playwright.
+            </p>
+
+            <p>
+                For example, Playwright can launch Chromium, Firefox
+                or WebKit.
+            </p>
+
+            <pre>
+const browser = await chromium.launch();
+            </pre>
+
+        </div>
+
+
+        <div class="concept">
+
+            <h3>2. Browser Context</h3>
+
+            <p>
+                A <strong>Browser Context</strong> is an isolated browser
+                session inside the browser.
+            </p>
+
+            <p>
+                Each context has its own cookies, local storage,
+                session storage and other browser state.
+            </p>
+
+            <p>
+                This allows multiple tests to run independently without
+                sharing session data.
+            </p>
+
+            <pre>
+const context = await browser.newContext();
+            </pre>
+
+            <div class="note">
+                <strong>Important:</strong>
+                Browser Context is similar to an incognito-style isolated
+                browser session.
+            </div>
+
+        </div>
+
+
+        <div class="concept">
+
+            <h3>3. Page</h3>
+
+            <p>
+                A <strong>Page</strong> represents a browser tab or window.
+            </p>
+
+            <p>
+                A browser context can contain multiple pages.
+            </p>
+
+            <pre>
+const page = await context.newPage();
+            </pre>
+
+            <p>
+                We use the Page object to navigate to URLs and interact
+                with the web application.
+            </p>
+
+            <pre>
+await page.goto('https://example.com');
+            </pre>
+
+        </div>
+
+
+        <div class="concept">
+
+            <h3>4. Locator</h3>
+
+            <p>
+                A <strong>Locator</strong> is used to identify and interact
+                with elements on a web page.
+            </p>
+
+            <p>
+                Examples include buttons, text boxes, links, checkboxes
+                and other DOM elements.
+            </p>
+
+            <pre>
+const username = page.locator('#username');
+
+await username.fill('admin');
+            </pre>
+
+            <p>
+                Playwright locators also provide automatic waiting and
+                retry behavior, which makes tests more reliable.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Understanding the Relationship</h2>
+
+        <table>
+
+            <tr>
+                <th>Component</th>
+                <th>What it represents</th>
+                <th>Example</th>
+            </tr>
+
+            <tr>
+                <td>Browser</td>
+                <td>Actual browser instance</td>
+                <td>Chromium / Firefox / WebKit</td>
+            </tr>
+
+            <tr>
+                <td>Browser Context</td>
+                <td>Isolated browser session</td>
+                <td>Separate cookies and storage</td>
+            </tr>
+
+            <tr>
+                <td>Page</td>
+                <td>Browser tab</td>
+                <td>Login page / Home page</td>
+            </tr>
+
+            <tr>
+                <td>Locator</td>
+                <td>Element identification</td>
+                <td>Button / textbox / link</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Simple Real-World Example</h2>
+
+        <p>
+            Suppose we are testing a login functionality.
+        </p>
+
+        <div class="flow">
+
+            <div class="box">
+                Browser
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                Context
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                Login Page
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                Username Locator
+            </div>
+
+        </div>
+
+        <pre>
+const browser = await chromium.launch();
+
+const context = await browser.newContext();
+
+const page = await context.newPage();
+
+await page.goto('https://example.com/login');
+
+const username = page.locator('#username');
+
+await username.fill('admin');
+        </pre>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Why Browser Context is Important</h2>
+
+        <p>
+            Browser contexts provide test isolation.
+        </p>
+
+        <p>
+            For example, suppose we have two tests:
+        </p>
+
+        <ul>
+            <li>Test 1 → Login as User A</li>
+            <li>Test 2 → Login as User B</li>
+        </ul>
+
+        <p>
+            Each test can use a separate browser context so that
+            cookies, sessions and authentication data do not interfere
+            with each other.
+        </p>
+
+        <pre>
+const context1 = await browser.newContext();
+const page1 = await context1.newPage();
+
+const context2 = await browser.newContext();
+const page2 = await context2.newPage();
+        </pre>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Complete Hierarchy</h2>
+
+        <div class="flow">
+
+            <div class="box">
+                Browser
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                Browser Context
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                Page
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                Locator
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                Web Element
+            </div>
+
+        </div>
+
+        <p>
+            In simple terms:
+        </p>
+
+        <p>
+            <strong>Browser</strong> → creates
+            <strong>Browser Context</strong> →
+            creates <strong>Page</strong> →
+            Page identifies elements using
+            <strong>Locators</strong>.
+        </p>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Key Takeaway</h2>
+
+        <p>
+            Understanding this hierarchy is essential for working with
+            Playwright effectively.
+        </p>
+
+        <ul>
+            <li><strong>Browser</strong> = browser instance</li>
+            <li><strong>Browser Context</strong> = isolated session</li>
+            <li><strong>Page</strong> = browser tab</li>
+            <li><strong>Locator</strong> = identifies elements on the page</li>
+        </ul>
+
+    </div>
+
+</body>
+
+</html>

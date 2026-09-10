@@ -58,11 +58,28 @@ npx playwright codegen https://example.com
 
 Copy the generated actions into a test file in `tests/`, then run the test with `npx playwright test`.
 
+## Learning examples
+
+The repository also includes standalone examples for learning Playwright's browser lifecycle:
+
+- `tests/normal_pw.ts` demonstrates the `Browser` -> `BrowserContext` -> `Page` flow.
+- `tests/multiple_context.ts` demonstrates isolated admin and viewer contexts in one browser.
+- `tests/Playwright-Architecture/index.html` is a visual guide to Playwright's architecture and core concepts.
+
+Open the architecture guide directly in a browser, or serve the repository with a local static server when preferred:
+
+```text
+tests/Playwright-Architecture/index.html
+```
+
 ## Project structure
 
 ```text
 playwright.config.ts  Playwright configuration
 tests/                Test files
+tests/Playwright-Architecture/  Playwright architecture learning guide
+tests/normal_pw.ts    Browser, context, and page example
+tests/multiple_context.ts  Multiple isolated browser contexts example
 playwright-report/    Generated HTML report, ignored by Git
 test-results/         Generated test artifacts, ignored by Git
 ```
